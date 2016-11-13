@@ -1,6 +1,8 @@
 # TODO:
-# - Remake the dictionary to allow selecting key by simple color names (get rid of _multiplier, _tolerance)
-# - Fix the formula to account for changes done to dictionary.
+# - Remake the dictionary to allow selecting key by simple color names (get rid of _multiplier, _tolerance) -- DONE
+# - Fix the formula to account for changes done to dictionary. -- DONE
+# - Fix the positioning of the widgets inside a window
+# - Fix overwriting of self.band3_var_result when any of the other combo boxes are selected
 # More to be added when problems and ideas arise.
 
 
@@ -41,7 +43,7 @@ d = {
         },
     'tolerance':{
         'brown': 0.01, 'red': 0.02, 'green': 0.005, 'blue': 0.025,
-        'violet': 0.010, 'grey': 0.005, 'gold': 0.05, 'silver': 0.10
+        'violet': 0.010, 'gray': 0.005, 'gold': 0.05, 'silver': 0.10
         }  
     }
 
@@ -72,24 +74,29 @@ class ResistorCalculator:
     #function to calculate the resistors
     def calculate_resistor(self):
         #if there are only 2 bands to add, change the formula to skip the band3
-        bands = d[self.band1_var_result] + d[self.band2_var_result] if d[self.band3_var_result] == 0 else d[self.band1_var_result] + d[self.band2_var_result] + d[self.band3_var_result]
+        #bands = d.band[self.band1_var_result] + d.band[self.band2_var_result] if self.band3_var_result == 0 else d.band[self.band1_var_result] + d.band[self.band2_var_result] + d.band[self.band3_var_result]
+        #print(self.band3_var_result)
+        if self.band3_var_result == 0:
+            bands = d.band[self.band1_var_result] + d.band[self.band2_var_result]
+        else:
+            bands = d.band[self.band1_var_result] + d.band[self.band2_var_result] + d.band[self.band3_var_result]
         #convert string into int so we can do mathematical operations on it
-        int_bands = int(bands)
-        int_multiplier = int(d[self.multiplier_var_result])
-        int_tolerance = int(d[self.tolerance_var_result])
+        int_bands = int(bands)       
+        multiplier = d.multiplier[self.multiplier_var_result]
+        tolerance = d.tolerance[self.tolerance_var_result]
         #calculate the resistance based on the formula
-        formula = (int_bands * int_multiplier) * int_tolerance
+        formula = (int_bands * multiplier) * tolerance
         #initialize empty variable to hold our result
-        result = ''
+        result = 0
         if formula < 1000:
             result = formula, "Ω"
             var.set(result)     #set our result to display in our GUI program
         # if result of formula exceeds 1000 concate "k" to the result.
         elif formula > 1000 and formula < 1000000:
-            result = formula / int_multiplier, "kΩ"
+            result = formula / multiplier, "kΩ"
             var.set(result)
         else:
-            result = formula / int_multiplier, "MΩ"
+            result = formula / multiplier, "MΩ"
             var.set(result)
     #function to build a GUI window and all of it's widgets.
     def build_window(self):
@@ -169,4 +176,3 @@ class ResistorCalculator:
 if __name__ == '__main__':
     app = ResistorCalculator(root, "Resistor Calculator")
     root.mainloop()
-    print(d.axa.red)
