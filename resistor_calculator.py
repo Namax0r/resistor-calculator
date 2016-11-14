@@ -1,7 +1,7 @@
 # TODO:
 # - Remake the dictionary to allow selecting key by simple color names (get rid of _multiplier, _tolerance) -- DONE
 # - Fix the formula to account for changes done to dictionary. -- DONE
-# - Fix the positioning of the widgets inside a window
+# - Fix the positioning of the widgets inside a window -- PARTLY DONE
 # - Fix overwriting of self.band3_var_result when any of the other combo boxes are selected
 # More to be added when problems and ideas arise.
 
@@ -17,8 +17,8 @@ except ImportError:
 from tkinter.ttk import Combobox
 
 root = tk.Tk()
-root.minsize(500,300)
-root.maxsize(550,310)
+root.minsize(300,300)
+#root.maxsize(550,310)
 # var is used to store our result
 var_result = tk.StringVar()
 var_max = tk.StringVar()
@@ -103,101 +103,101 @@ class ResistorCalculator:
         elif formula > 1000 and formula < 1000000:
             result_max = max_resistance / multiplier, "kΩ"
             result_min = min_resistance / multiplier, "kΩ"
-            result_normal = formula, "kΩ"
+            result_normal = formula / multiplier, "kΩ"
             var_result.set(result_normal)
             var_max.set(result_max)
             var_min.set(result_min)
         else:
             result_max = max_resistance / multiplier, "MΩ"
             result_min = min_resistance / multiplier, "MΩ"
-            result_normal = formula, "MΩ"
+            result_normal = formula / multiplier, "MΩ"
             var_result.set(result_normal)
             var_max.set(result_max)
             var_min.set(result_min)
     #function to build a GUI window and all of it's widgets.
     def build_window(self):
-        main_frame = tk.Frame(self.parent)
-        main_frame.pack(fill=tk.BOTH, expand=tk.YES)
+        #main_frame = tk.Frame(self.parent)
+        #main_frame.pack(fill=tk.BOTH, expand=tk.YES)
 
         # status bar, displayed at the bottom of a program
-        self.statusBar = tk.Label(main_frame, text="by Namax0r", relief=tk.SUNKEN, bd=1) 
-        self.statusBar.pack(side=tk.BOTTOM, fill=tk.X)
+        self.statusBar = tk.Label(self.parent, text="by Namax0r", relief=tk.SUNKEN, bd=1) 
+        self.statusBar.grid(row=15, column=2)
 
         # Band 1
-        label = tk.Label(main_frame, text="Band 1" )
-        label.pack()
+        label = tk.Label(self.parent, text="Band 1" )
+        label.grid(row=0, column=0)
         self.band1_var = tk.StringVar() #a string variable to hold user selection
-        band1_combo = Combobox(main_frame, state='readonly', height = '6', justify = 'center', textvariable=self.band1_var)
+        band1_combo = Combobox(self.parent, state='readonly', height = '6', justify = 'center', textvariable=self.band1_var)
         band1_combo['values']=('black', 'brown', 'red', 'orange',
                                'yellow', 'green', 'blue', 'violet',
                                'gray', 'white')
         band1_combo.bind('<<ComboboxSelected>>', self.combobox_handler)
-        band1_combo.pack()
+        band1_combo.grid(row=0, column=1)
 
         # Band 2
-        label = tk.Label( main_frame, text="Band 2")
-        label.pack()
+        label = tk.Label( self.parent, text="Band 2")
+        label.grid(row=2, column=0)
         self.band2_var = tk.StringVar() 
-        band2_combo = Combobox(main_frame, state='readonly', height = '6', justify = 'center', textvariable=self.band2_var)
+        band2_combo = Combobox(self.parent, state='readonly', height = '6', justify = 'center', textvariable=self.band2_var)
         band2_combo['values']=('black', 'brown', 'red', 'orange',
                                'yellow', 'green', 'blue', 'violet',
                                'gray', 'white')
         band2_combo.bind('<<ComboboxSelected>>', self.combobox_handler)
-        band2_combo.pack()
+        band2_combo.grid(row=2, column=1)
 
         # Band 3
-        label = tk.Label( main_frame, text="Band 3" )
-        label.pack()
+        label = tk.Label( self.parent, text="Band 3" )
+        label.grid(row=4, column=0)
         self.band3_var = tk.StringVar()
         self.band3_var.set(" ")
-        band3_combo = Combobox(main_frame, state='readonly', height = '6', justify = 'center', textvariable=self.band3_var)
+        band3_combo = Combobox(self.parent, state='readonly', height = '6', justify = 'center', textvariable=self.band3_var)
         band3_combo['values']=('black', 'brown', 'red', 'orange',
                                'yellow', 'green', 'blue', 'violet',
                                'gray', 'white')
         band3_combo.bind('<<ComboboxSelected>>', self.combobox_handler)
-        band3_combo.pack()
+        band3_combo.grid(row=4, column=1)
 
         # Multiplier
-        label = tk.Label( main_frame, text="Multiplier" )
-        label.pack()
+        label = tk.Label( self.parent, text="Multiplier" )
+        label.grid(row=6, column=0)
         self.multiplier_var = tk.StringVar()
-        multiplier_combo = Combobox(main_frame, state='readonly', height = '6', justify = 'center', textvariable=self.multiplier_var)
+        multiplier_combo = Combobox(self.parent, state='readonly', height = '6', justify = 'center', textvariable=self.multiplier_var)
         multiplier_combo['values']=('black', 'brown', 'red', 'orange',
                                     'yellow', 'green', 'blue', 'violet')
         multiplier_combo.bind('<<ComboboxSelected>>', self.combobox_handler)
-        multiplier_combo.pack()
+        multiplier_combo.grid(row=6, column=1)
 
         # Tolerance
-        label = tk.Label( main_frame, text="Tolerance" )
-        label.pack()
+        label = tk.Label( self.parent, text="Tolerance" )
+        label.grid(row=8, column=0)
         self.tolerance_var = tk.StringVar()
-        tolerance_combo = Combobox(main_frame, state='readonly', height = '6', justify = 'center', textvariable=self.tolerance_var)
+        tolerance_combo = Combobox(self.parent, state='readonly', height = '6', justify = 'center', textvariable=self.tolerance_var)
         tolerance_combo['values']=('brown', 'red', 'green', 'blue',
                                    'violet', 'gray', 'gold', 'silver')
         tolerance_combo.bind('<<ComboboxSelected>>', self.combobox_handler)
-        tolerance_combo.pack()
+        tolerance_combo.grid(row=8, column=1)
             
-        self.calculate_button = tk.Button(main_frame, text ="Calculate", command = self.calculate_resistor)
-        self.calculate_button.pack()
+        self.calculate_button = tk.Button(self.parent, text ="Calculate", command = self.calculate_resistor)
+        self.calculate_button.grid(row=9, column=1)
 
         # Result
-        label = tk.Message( main_frame, text="Result: ", pady=50)
-        label.pack( side = tk.LEFT ) 
+        label = tk.Message( self.parent, text="Result:")
+        label.grid(row=11, column=1) 
 
-        label = tk.Message( main_frame, text="Normal: ", pady=50)
-        label.pack( side = tk.RIGHT )
-        label = tk.Message( main_frame, textvariable=var_result, relief=tk.RAISED, width=55, padx=5 )
-        label.pack( side = tk.RIGHT )
+        label = tk.Message( self.parent, text="Basic:")
+        label.grid(row=12, column=0)
+        label = tk.Message( self.parent, textvariable=var_result, relief=tk.RAISED )
+        label.grid(row=12, column=1)
 
-        label = tk.Message( main_frame, text="Max: ", pady=50)
-        label.pack( side = tk.RIGHT )
-        label = tk.Message( main_frame, textvariable=var_max, relief=tk.RAISED, width=55, padx=5 )
-        label.pack( side = tk.RIGHT )
+        label = tk.Message( self.parent, text="Max:")
+        label.grid(row=13, column=0)
+        label = tk.Message( self.parent, textvariable=var_max, relief=tk.RAISED)
+        label.grid(row=13, column=1)
 
-        label = tk.Message( main_frame, text="Min: ", pady=50)
-        label.pack( side = tk.RIGHT )
-        label = tk.Message( main_frame, textvariable=var_min, relief=tk.RAISED, width=55, padx=5 )
-        label.pack( side = tk.RIGHT )
+        label = tk.Message( self.parent, text="Min:")
+        label.grid(row=14, column=0)
+        label = tk.Message( self.parent, textvariable=var_min, relief=tk.RAISED )
+        label.grid(row=14, column=1)
 
     def close_program(self, event=None):
         self.parent.destroy()
