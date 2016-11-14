@@ -75,8 +75,7 @@ class ResistorCalculator:
     def calculate_resistor(self):
         #if there are only 2 bands to add, change the formula to skip the band3
         #bands = d.band[self.band1_var_result] + d.band[self.band2_var_result] if self.band3_var_result == 0 else d.band[self.band1_var_result] + d.band[self.band2_var_result] + d.band[self.band3_var_result]
-        #print(self.band3_var_result)
-        if self.band3_var_result == 0:
+        if self.band3_var_result == " ":
             bands = d.band[self.band1_var_result] + d.band[self.band2_var_result]
         else:
             bands = d.band[self.band1_var_result] + d.band[self.band2_var_result] + d.band[self.band3_var_result]
@@ -126,18 +125,19 @@ class ResistorCalculator:
         band2_combo['values']=('black', 'brown', 'red', 'orange',
                                'yellow', 'green', 'blue', 'violet',
                                'gray', 'white')
-        band1_combo.bind('<<ComboboxSelected>>', self.combobox_handler)
+        band2_combo.bind('<<ComboboxSelected>>', self.combobox_handler)
         band2_combo.pack()
 
         # Band 3
         label = tk.Label( main_frame, text="Band 3" )
         label.pack()
         self.band3_var = tk.StringVar()
+        self.band3_var.set(" ")
         band3_combo = Combobox(main_frame, state='readonly', height = '6', justify = 'center', textvariable=self.band3_var)
         band3_combo['values']=('black', 'brown', 'red', 'orange',
                                'yellow', 'green', 'blue', 'violet',
                                'gray', 'white')
-        band1_combo.bind('<<ComboboxSelected>>', self.combobox_handler)
+        band3_combo.bind('<<ComboboxSelected>>', self.combobox_handler)
         band3_combo.pack()
 
         # Multiplier
@@ -147,7 +147,7 @@ class ResistorCalculator:
         multiplier_combo = Combobox(main_frame, state='readonly', height = '6', justify = 'center', textvariable=self.multiplier_var)
         multiplier_combo['values']=('black', 'brown', 'red', 'orange',
                                     'yellow', 'green', 'blue', 'violet')
-        band1_combo.bind('<<ComboboxSelected>>', self.combobox_handler)
+        multiplier_combo.bind('<<ComboboxSelected>>', self.combobox_handler)
         multiplier_combo.pack()
 
         # Tolerance
