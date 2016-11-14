@@ -20,7 +20,9 @@ root = tk.Tk()
 root.minsize(500,300)
 root.maxsize(550,310)
 # var is used to store our result
-var = tk.StringVar()
+var_result = tk.StringVar()
+var_max = tk.StringVar()
+var_min = tk.StringVar()
 
 #small utility that adds dot.notation access to dictionary attributes
 class dotdict(dict):
@@ -84,19 +86,34 @@ class ResistorCalculator:
         multiplier = d.multiplier[self.multiplier_var_result]
         tolerance = d.tolerance[self.tolerance_var_result]
         #calculate the resistance based on the formula
-        formula = (int_bands * multiplier) * tolerance
-        #initialize empty variable to hold our result
-        result = 0
+        formula = (int_bands * multiplier)
+        max_resistance = formula + (formula *  tolerance)
+        min_resistance = formula - (formula *  tolerance)
+        print(max_resistance)
+        print(min_resistance)
+
         if formula < 1000:
-            result = formula, "Ω"
-            var.set(result)     #set our result to display in our GUI program
+            result_max = max_resistance, "Ω"
+            result_min = min_resistance, "Ω"
+            result_normal = formula, "Ω"
+            var_result.set(result_normal)
+            var_max.set(result_max)     #set our result to display in our GUI program
+            var_min.set(result_min)
         # if result of formula exceeds 1000 concate "k" to the result.
         elif formula > 1000 and formula < 1000000:
-            result = formula / multiplier, "kΩ"
-            var.set(result)
+            result_max = max_resistance / multiplier, "kΩ"
+            result_min = min_resistance / multiplier, "kΩ"
+            result_normal = formula, "kΩ"
+            var_result.set(result_normal)
+            var_max.set(result_max)
+            var_min.set(result_min)
         else:
-            result = formula / multiplier, "MΩ"
-            var.set(result)
+            result_max = max_resistance / multiplier, "MΩ"
+            result_min = min_resistance / multiplier, "MΩ"
+            result_normal = formula, "MΩ"
+            var_result.set(result_normal)
+            var_max.set(result_max)
+            var_min.set(result_min)
     #function to build a GUI window and all of it's widgets.
     def build_window(self):
         main_frame = tk.Frame(self.parent)
@@ -167,7 +184,19 @@ class ResistorCalculator:
         label = tk.Message( main_frame, text="Result: ", pady=50)
         label.pack( side = tk.LEFT ) 
 
-        label = tk.Message( main_frame, textvariable=var, relief=tk.RAISED, width=55, padx=5 )
+        label = tk.Message( main_frame, text="Normal: ", pady=50)
+        label.pack( side = tk.RIGHT )
+        label = tk.Message( main_frame, textvariable=var_result, relief=tk.RAISED, width=55, padx=5 )
+        label.pack( side = tk.RIGHT )
+
+        label = tk.Message( main_frame, text="Max: ", pady=50)
+        label.pack( side = tk.RIGHT )
+        label = tk.Message( main_frame, textvariable=var_max, relief=tk.RAISED, width=55, padx=5 )
+        label.pack( side = tk.RIGHT )
+
+        label = tk.Message( main_frame, text="Min: ", pady=50)
+        label.pack( side = tk.RIGHT )
+        label = tk.Message( main_frame, textvariable=var_min, relief=tk.RAISED, width=55, padx=5 )
         label.pack( side = tk.RIGHT )
 
     def close_program(self, event=None):
