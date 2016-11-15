@@ -1,7 +1,7 @@
 # TODO:
 # - Remake the dictionary to allow selecting key by simple color names (get rid of _multiplier, _tolerance) -- DONE
 # - Fix the formula to account for changes done to dictionary. -- DONE
-# - Fix the positioning of the widgets inside a window -- PARTLY DONE
+# - Fix the positioning of the widgets inside a window -- DONE
 # - Fix overwriting of self.band3_var_result when any of the other combo boxes are selected
 # More to be added when problems and ideas arise.
 
@@ -18,7 +18,10 @@ from tkinter.ttk import Combobox
 from tkinter import messagebox
 
 root = tk.Tk()
-root.minsize(300,300)
+window_width = 300
+window_height = 380
+root.minsize(window_width, window_height)
+root.maxsize(window_width, window_height)
 #root.maxsize(550,310)
 # var is used to store our result
 var_result = tk.StringVar()
@@ -66,6 +69,9 @@ class ResistorCalculator:
         self.tolerance_var_result = 0
 
         self.build_window()
+    #function to destroy the window when [X] is pressed
+    def close_program(self, event=None):
+        self.parent.destroy()
 
     def combobox_handler(self, event): #function called when '<<ComboboxSelected>>' event is triggered
         #store values of comboboxes in variables.
@@ -74,6 +80,7 @@ class ResistorCalculator:
         self.band3_var_result = self.band3_var.get()
         self.multiplier_var_result = self.multiplier_var.get()
         self.tolerance_var_result = self.tolerance_var.get() 
+
     #function to handle error where there are not enough arguments to calculate resistor.
     def error_not_enough_args(self):
         tk.messagebox.showinfo("Error", "Not enough arguments to calculate. Please select more values.")
@@ -81,7 +88,6 @@ class ResistorCalculator:
     #function to calculate the resistors
     def calculate_resistor(self):
         #if there are only 2 bands to add, change the formula to skip the band3
-        #bands = d.band[self.band1_var_result] + d.band[self.band2_var_result] if self.band3_var_result == 0 else d.band[self.band1_var_result] + d.band[self.band2_var_result] + d.band[self.band3_var_result]
         try:
             if self.band3_var_result == " ":
                 bands = d.band[self.band1_var_result] + d.band[self.band2_var_result]
@@ -125,31 +131,28 @@ class ResistorCalculator:
                 var_min.set(result_min)
         except KeyError:
             self.error_not_enough_args()
+
     #function to build a GUI window and all of it's widgets.
     def build_window(self):
         #main_frame = tk.Frame(self.parent)
         #main_frame.pack(fill=tk.BOTH, expand=tk.YES)
 
-        # status bar, displayed at the bottom of a program
-        self.statusBar = tk.Label(self.parent, text="by Namax0r", relief=tk.SUNKEN, bd=1) 
-        self.statusBar.grid(row=15, column=2)
-
         # Band 1
         label = tk.Label(self.parent, text="Band 1" )
-        label.grid(row=0, column=0)
+        label.grid(row=0, column=0, ipadx=30, pady=5)
         self.band1_var = tk.StringVar() #a string variable to hold user selection
-        band1_combo = Combobox(self.parent, state='readonly', height = '6', justify = 'center', textvariable=self.band1_var)
+        band1_combo = Combobox(self.parent, state='readonly', height = '10', justify = 'center', textvariable=self.band1_var)
         band1_combo['values']=('black', 'brown', 'red', 'orange',
                                'yellow', 'green', 'blue', 'violet',
                                'gray', 'white')
         band1_combo.bind('<<ComboboxSelected>>', self.combobox_handler)
-        band1_combo.grid(row=0, column=1)
+        band1_combo.grid(row=0, column=1, padx=10)
 
         # Band 2
         label = tk.Label( self.parent, text="Band 2")
-        label.grid(row=2, column=0)
+        label.grid(row=2, column=0, pady=5)
         self.band2_var = tk.StringVar() 
-        band2_combo = Combobox(self.parent, state='readonly', height = '6', justify = 'center', textvariable=self.band2_var)
+        band2_combo = Combobox(self.parent, state='readonly', height = '10', justify = 'center', textvariable=self.band2_var)
         band2_combo['values']=('black', 'brown', 'red', 'orange',
                                'yellow', 'green', 'blue', 'violet',
                                'gray', 'white')
@@ -158,10 +161,10 @@ class ResistorCalculator:
 
         # Band 3
         label = tk.Label( self.parent, text="Band 3" )
-        label.grid(row=4, column=0)
+        label.grid(row=4, column=0, pady=5)
         self.band3_var = tk.StringVar()
         self.band3_var.set(" ")
-        band3_combo = Combobox(self.parent, state='readonly', height = '6', justify = 'center', textvariable=self.band3_var)
+        band3_combo = Combobox(self.parent, state='readonly', height = '10', justify = 'center', textvariable=self.band3_var)
         band3_combo['values']=('black', 'brown', 'red', 'orange',
                                'yellow', 'green', 'blue', 'violet',
                                'gray', 'white')
@@ -170,9 +173,9 @@ class ResistorCalculator:
 
         # Multiplier
         label = tk.Label( self.parent, text="Multiplier" )
-        label.grid(row=6, column=0)
+        label.grid(row=6, column=0, pady=5)
         self.multiplier_var = tk.StringVar()
-        multiplier_combo = Combobox(self.parent, state='readonly', height = '6', justify = 'center', textvariable=self.multiplier_var)
+        multiplier_combo = Combobox(self.parent, state='readonly', height = '10', justify = 'center', textvariable=self.multiplier_var)
         multiplier_combo['values']=('black', 'brown', 'red', 'orange',
                                     'yellow', 'green', 'blue', 'violet')
         multiplier_combo.bind('<<ComboboxSelected>>', self.combobox_handler)
@@ -180,38 +183,37 @@ class ResistorCalculator:
 
         # Tolerance
         label = tk.Label( self.parent, text="Tolerance" )
-        label.grid(row=8, column=0)
+        label.grid(row=8, column=0, pady=5)
         self.tolerance_var = tk.StringVar()
-        tolerance_combo = Combobox(self.parent, state='readonly', height = '6', justify = 'center', textvariable=self.tolerance_var)
+        tolerance_combo = Combobox(self.parent, state='readonly', height = '10', justify = 'center', textvariable=self.tolerance_var)
         tolerance_combo['values']=('brown', 'red', 'green', 'blue',
                                    'violet', 'gray', 'gold', 'silver')
         tolerance_combo.bind('<<ComboboxSelected>>', self.combobox_handler)
         tolerance_combo.grid(row=8, column=1)
-            
+        # Calculate button
         self.calculate_button = tk.Button(self.parent, text ="Calculate", command = self.calculate_resistor)
-        self.calculate_button.grid(row=9, column=1)
+        self.calculate_button.grid(row=9, column=1, pady=5, ipadx=40)
 
         # Result
-        label = tk.Message( self.parent, text="Result:")
-        label.grid(row=11, column=1) 
 
-        label = tk.Message( self.parent, text="Basic:")
-        label.grid(row=12, column=0)
+        label = tk.Message( self.parent, text="Result:")
+        label.grid(row=12, column=0, pady=10)
         label = tk.Message( self.parent, textvariable=var_result, relief=tk.RAISED )
         label.grid(row=12, column=1)
 
         label = tk.Message( self.parent, text="Max:")
-        label.grid(row=13, column=0)
+        label.grid(row=13, column=0, pady=10)
         label = tk.Message( self.parent, textvariable=var_max, relief=tk.RAISED)
         label.grid(row=13, column=1)
 
         label = tk.Message( self.parent, text="Min:")
-        label.grid(row=14, column=0)
+        label.grid(row=14, column=0, pady=10)
         label = tk.Message( self.parent, textvariable=var_min, relief=tk.RAISED )
         label.grid(row=14, column=1)
 
-    def close_program(self, event=None):
-        self.parent.destroy()
+        # status bar, displayed at the bottom of a program
+        self.statusBar = tk.Label(self.parent, text="by Namax0r", relief=tk.SUNKEN, bd=1) 
+        self.statusBar.place(x=window_width - 70, y=window_height - 20)
     
 if __name__ == '__main__':
     app = ResistorCalculator(root, "Resistor Calculator")
