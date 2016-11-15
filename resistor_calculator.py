@@ -15,6 +15,7 @@ except ImportError:
     import tkinter as tk
 
 from tkinter.ttk import Combobox
+from tkinter import messagebox
 
 root = tk.Tk()
 root.minsize(300,300)
@@ -65,6 +66,7 @@ class ResistorCalculator:
         self.tolerance_var_result = 0
 
         self.build_window()
+
     def combobox_handler(self, event): #function called when '<<ComboboxSelected>>' event is triggered
         #store values of comboboxes in variables.
         self.band1_var_result = self.band1_var.get()
@@ -72,48 +74,57 @@ class ResistorCalculator:
         self.band3_var_result = self.band3_var.get()
         self.multiplier_var_result = self.multiplier_var.get()
         self.tolerance_var_result = self.tolerance_var.get() 
+    #function to handle error where there are not enough arguments to calculate resistor.
+    def error_not_enough_args(self):
+        tk.messagebox.showinfo("Error", "Not enough arguments to calculate. Please select more values.")
 
     #function to calculate the resistors
     def calculate_resistor(self):
         #if there are only 2 bands to add, change the formula to skip the band3
         #bands = d.band[self.band1_var_result] + d.band[self.band2_var_result] if self.band3_var_result == 0 else d.band[self.band1_var_result] + d.band[self.band2_var_result] + d.band[self.band3_var_result]
-        if self.band3_var_result == " ":
-            bands = d.band[self.band1_var_result] + d.band[self.band2_var_result]
-        else:
-            bands = d.band[self.band1_var_result] + d.band[self.band2_var_result] + d.band[self.band3_var_result]
-        #convert string into int so we can do mathematical operations on it
-        int_bands = int(bands)       
-        multiplier = d.multiplier[self.multiplier_var_result]
-        tolerance = d.tolerance[self.tolerance_var_result]
-        #calculate the resistance based on the formula
-        formula = (int_bands * multiplier)
-        max_resistance = formula + (formula *  tolerance)
-        min_resistance = formula - (formula *  tolerance)
-        print(max_resistance)
-        print(min_resistance)
+        try:
+            if self.band3_var_result == " ":
+                bands = d.band[self.band1_var_result] + d.band[self.band2_var_result]
+            #elif self.band1_var_result == 0 :
+                #print("its working")
+                #self.error_not_enough_args()
+            else:
+                bands = d.band[self.band1_var_result] + d.band[self.band2_var_result] + d.band[self.band3_var_result]
+            #convert string into int so we can do mathematical operations on it
+            int_bands = int(bands)       
+            multiplier = d.multiplier[self.multiplier_var_result]
+            tolerance = d.tolerance[self.tolerance_var_result]
+            #calculate the resistance based on the formula
+            formula = (int_bands * multiplier)
+            max_resistance = formula + (formula *  tolerance)
+            min_resistance = formula - (formula *  tolerance)
+            print(max_resistance)
+            print(min_resistance)
 
-        if formula < 1000:
-            result_max = max_resistance, "Ω"
-            result_min = min_resistance, "Ω"
-            result_normal = formula, "Ω"
-            var_result.set(result_normal)
-            var_max.set(result_max)     #set our result to display in our GUI program
-            var_min.set(result_min)
-        # if result of formula exceeds 1000 concate "k" to the result.
-        elif formula > 1000 and formula < 1000000:
-            result_max = max_resistance / multiplier, "kΩ"
-            result_min = min_resistance / multiplier, "kΩ"
-            result_normal = formula / multiplier, "kΩ"
-            var_result.set(result_normal)
-            var_max.set(result_max)
-            var_min.set(result_min)
-        else:
-            result_max = max_resistance / multiplier, "MΩ"
-            result_min = min_resistance / multiplier, "MΩ"
-            result_normal = formula / multiplier, "MΩ"
-            var_result.set(result_normal)
-            var_max.set(result_max)
-            var_min.set(result_min)
+            if formula < 1000:
+                result_max = max_resistance, "Ω"
+                result_min = min_resistance, "Ω"
+                result_normal = formula, "Ω"
+                var_result.set(result_normal)
+                var_max.set(result_max)     #set our result to display in our GUI program
+                var_min.set(result_min)
+            # if result of formula exceeds 1000 concate "k" to the result.
+            elif formula > 1000 and formula < 1000000:
+                result_max = max_resistance / multiplier, "kΩ"
+                result_min = min_resistance / multiplier, "kΩ"
+                result_normal = formula / multiplier, "kΩ"
+                var_result.set(result_normal)
+                var_max.set(result_max)
+                var_min.set(result_min)
+            else:
+                result_max = max_resistance / multiplier, "MΩ"
+                result_min = min_resistance / multiplier, "MΩ"
+                result_normal = formula / multiplier, "MΩ"
+                var_result.set(result_normal)
+                var_max.set(result_max)
+                var_min.set(result_min)
+        except KeyError:
+            self.error_not_enough_args()
     #function to build a GUI window and all of it's widgets.
     def build_window(self):
         #main_frame = tk.Frame(self.parent)
