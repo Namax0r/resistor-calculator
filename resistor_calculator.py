@@ -1,12 +1,6 @@
-# TODO:
-# - Remake the dictionary to allow selecting key by simple color names (get rid of _multiplier, _tolerance) -- DONE
-# - Fix the formula to account for changes done to dictionary. -- DONE
-# - Fix the positioning of the widgets inside a window -- DONE
-# - Fix overwriting of self.band3_var_result when any of the other combo boxes are selected
-# More to be added when problems and ideas arise.
+#!/usr/bin/env python
 
-
-# basic version handling
+# Basic version handling
 try:
     # Python2
     import Tkinter as tk
@@ -139,9 +133,9 @@ class ResistorCalculator:
     # Function to build a GUI window and all of it's widgets.
     def build_window(self):
         # Band 1
-        label = tk.Label(self.parent, text="Band 1" )
-        label.grid(row=0, column=0, ipadx=30, pady=5)
-        self.band1_var = tk.StringVar() #a string variable to hold user selection
+        band1_label = tk.Label(self.parent, text="Band 1" )
+        band1_label.grid(row=0, column=0, ipadx=30, pady=5)
+        self.band1_var = tk.StringVar() 
         band1_combo = Combobox(self.parent, state='readonly', height = '10', justify = 'center', textvariable=self.band1_var)
         band1_combo['values']=('black', 'brown', 'red', 'orange',
                                'yellow', 'green', 'blue', 'violet',
@@ -150,8 +144,8 @@ class ResistorCalculator:
         band1_combo.grid(row=0, column=1, padx=10)
 
         # Band 2
-        label = tk.Label( self.parent, text="Band 2")
-        label.grid(row=2, column=0, pady=5)
+        band2_label = tk.Label( self.parent, text="Band 2")
+        band2_label.grid(row=2, column=0, pady=5)
         self.band2_var = tk.StringVar() 
         band2_combo = Combobox(self.parent, state='readonly', height = '10', justify = 'center', textvariable=self.band2_var)
         band2_combo['values']=('black', 'brown', 'red', 'orange',
@@ -161,9 +155,10 @@ class ResistorCalculator:
         band2_combo.grid(row=2, column=1)
 
         # Band 3
-        label = tk.Label( self.parent, text="Band 3" )
-        label.grid(row=4, column=0, pady=5)
+        band3_label = tk.Label( self.parent, text="Band 3" )
+        band3_label.grid(row=4, column=0, pady=5)
         self.band3_var = tk.StringVar()
+        # Setting band3 to " " helps with modification of calculation formula based on this value
         self.band3_var.set(" ")
         band3_combo = Combobox(self.parent, state='readonly', height = '10', justify = 'center', textvariable=self.band3_var)
         band3_combo['values']=('black', 'brown', 'red', 'orange',
@@ -173,8 +168,8 @@ class ResistorCalculator:
         band3_combo.grid(row=4, column=1)
 
         # Multiplier
-        label = tk.Label( self.parent, text="Multiplier" )
-        label.grid(row=6, column=0, pady=5)
+        multiplier_label = tk.Label( self.parent, text="Multiplier" )
+        multiplier_label.grid(row=6, column=0, pady=5)
         self.multiplier_var = tk.StringVar()
         multiplier_combo = Combobox(self.parent, state='readonly', height = '10', justify = 'center', textvariable=self.multiplier_var)
         multiplier_combo['values']=('black', 'brown', 'red', 'orange',
@@ -183,8 +178,8 @@ class ResistorCalculator:
         multiplier_combo.grid(row=6, column=1)
 
         # Tolerance
-        label = tk.Label( self.parent, text="Tolerance" )
-        label.grid(row=8, column=0, pady=5)
+        tolerance_label = tk.Label( self.parent, text="Tolerance" )
+        tolerance_label.grid(row=8, column=0, pady=5)
         self.tolerance_var = tk.StringVar()
         tolerance_combo = Combobox(self.parent, state='readonly', height = '10', justify = 'center', textvariable=self.tolerance_var)
         tolerance_combo['values']=('brown', 'red', 'green', 'blue',
@@ -196,25 +191,25 @@ class ResistorCalculator:
         self.calculate_button = tk.Button(self.parent, text ="Calculate", command = self.calculate_resistor)
         self.calculate_button.grid(row=9, column=1, pady=5, ipadx=40)
 
-        # Result
-        label = tk.Message( self.parent, text="Result:")
-        label.grid(row=12, column=0, pady=10)
-        label = tk.Message( self.parent, textvariable=var_result, relief=tk.RAISED )
-        label.grid(row=12, column=1)
+        # Results section
+        result_label = tk.Message( self.parent, text="Result:")
+        result_label.grid(row=12, column=0, pady=10)
+        result_value = tk.Message( self.parent, textvariable=var_result, relief=tk.RAISED )
+        result_value.grid(row=12, column=1)
 
-        label = tk.Message( self.parent, text="Max:")
-        label.grid(row=13, column=0, pady=10, ipadx=20)
-        label = tk.Message( self.parent, textvariable=var_max, relief=tk.RAISED)
-        label.grid(row=13, column=1)
+        max_result_label = tk.Message( self.parent, text="Max:")
+        max_result_label.grid(row=13, column=0, pady=10, ipadx=20)
+        max_result_value = tk.Message( self.parent, textvariable=var_max, relief=tk.RAISED)
+        max_result_value.grid(row=13, column=1)
 
-        label = tk.Message( self.parent, text="Min:")
-        label.grid(row=14, column=0, pady=10)
-        label = tk.Message( self.parent, textvariable=var_min, relief=tk.RAISED )
-        label.grid(row=14, column=1)
+        min_result_label = tk.Message( self.parent, text="Min:")
+        min_result_label.grid(row=14, column=0, pady=10)
+        min_result_value = tk.Message( self.parent, textvariable=var_min, relief=tk.RAISED )
+        min_result_value.grid(row=14, column=1)
 
-        # author name, displayed at the bottom of a program
-        self.author_name = tk.Label(self.parent, text="by Namax0r", relief=tk.SUNKEN, bd=1) 
-        self.author_name.place(x=window_width - 70, y=window_height - 20)
+        # Author name, displayed at the bottom of a program
+        author_name = tk.Label(self.parent, text="by Namax0r", relief=tk.SUNKEN, bd=1) 
+        author_name.place(x=window_width - 70, y=window_height - 20)
     
 if __name__ == '__main__':
     app = ResistorCalculator(root, "Resistor Calculator")
