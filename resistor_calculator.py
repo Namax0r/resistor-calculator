@@ -17,26 +17,29 @@ except ImportError:
 from tkinter.ttk import Combobox
 from tkinter import messagebox
 
-root = tk.Tk()
-window_width = 300
-window_height = 380
-root.minsize(window_width, window_height)
-root.maxsize(window_width, window_height)
-#root.maxsize(550,310)
-# var is used to store our result
-var_result = tk.StringVar()
-var_max = tk.StringVar()
-var_min = tk.StringVar()
-
-#small utility that adds dot.notation access to dictionary attributes
+# Small utility that adds dot notation access to dictionary attributes
 class dotdict(dict):
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
-#create dictionary of colors and values
+# Main view window
+root = tk.Tk()
+# Store width and height in variable for ease of change
+window_width = 300
+window_height = 380
+# Set min and max size of a GUI window
+root.minsize(window_width, window_height)
+root.maxsize(window_width, window_height)
+
+# Var is used to store our result
+var_result = tk.StringVar()
+var_max = tk.StringVar()
+var_min = tk.StringVar()
+
+# Create dictionary of colors and values
 d = {
-    #values of the band are stored as string to allow concantation of the numbers.
+    #Values of the band are stored as string to allow concatenation of the numbers.
     'band':{
         'black': "0", 'brown': "1", 'red': "2", 'orange': "3",
         'yellow': "4", 'green': "5", 'blue': "6", 'violet': "7",
@@ -53,7 +56,7 @@ d = {
         }  
     }
 
-#enable dot notation on the dictionary
+# Enable dot notation on the dictionary
 d = dotdict(d)
 
 class ResistorCalculator:
@@ -61,7 +64,7 @@ class ResistorCalculator:
         self.parent = parent
         self.parent.title(title)
         self.parent.protocol("WM_DELETE_WINDOW", self.close_program)
-        #define variables to store values of comboboxes 
+        # Define variables to store values of comboboxes 
         self.band1_var_result = 0
         self.band2_var_result = 0
         self.band3_var_result = 0
@@ -69,11 +72,13 @@ class ResistorCalculator:
         self.tolerance_var_result = 0
 
         self.build_window()
-    #function to destroy the window when [X] is pressed
+
+    # Function to destroy the window when [X] is pressed
     def close_program(self, event=None):
         self.parent.destroy()
 
-    def combobox_handler(self, event): #function called when '<<ComboboxSelected>>' event is triggered
+    # Function called when '<<ComboboxSelected>>' event is triggered
+    def combobox_handler(self, event): 
         #store values of comboboxes in variables.
         self.band1_var_result = self.band1_var.get()
         self.band2_var_result = self.band2_var.get()
@@ -81,62 +86,58 @@ class ResistorCalculator:
         self.multiplier_var_result = self.multiplier_var.get()
         self.tolerance_var_result = self.tolerance_var.get() 
 
-    #function to handle error where there are not enough arguments to calculate resistor.
+    # Function to handle error, when there are not enough arguments for formula to calculate properly.
     def error_not_enough_args(self):
         tk.messagebox.showinfo("Error", "Not enough arguments to calculate. Please select more values.")
 
-    #function to calculate the resistors
+    # Function to add a mark at the end of a result
+    def add_mark(self, val, mark):
+        return val, mark
+
+    # Function to calculate the resistors
     def calculate_resistor(self):
-        #if there are only 2 bands to add, change the formula to skip the band3
         try:
+            # If there are only 2 bands to add, change the formula to skip the band3
             if self.band3_var_result == " ":
                 bands = d.band[self.band1_var_result] + d.band[self.band2_var_result]
-            #elif self.band1_var_result == 0 :
-                #print("its working")
-                #self.error_not_enough_args()
             else:
                 bands = d.band[self.band1_var_result] + d.band[self.band2_var_result] + d.band[self.band3_var_result]
-            #convert string into int so we can do mathematical operations on it
+            # Convert string into int so we can do mathematical operations on it
             int_bands = int(bands)       
+            # Set multiplier and tolerance
             multiplier = d.multiplier[self.multiplier_var_result]
             tolerance = d.tolerance[self.tolerance_var_result]
-            #calculate the resistance based on the formula
+            # Calculate the resistance based on the formula
             formula = (int_bands * multiplier)
             max_resistance = formula + (formula *  tolerance)
             min_resistance = formula - (formula *  tolerance)
-            print(max_resistance)
-            print(min_resistance)
 
+            result_max = max_resistance / multiplier
+            result_min = min_resistance / multiplier
+            result_normal = formula / multiplier
             if formula < 1000:
-                result_max = max_resistance, "Ω"
-                result_min = min_resistance, "Ω"
-                result_normal = formula, "Ω"
-                var_result.set(result_normal)
-                var_max.set(result_max)     #set our result to display in our GUI program
-                var_min.set(result_min)
-            # if result of formula exceeds 1000 concate "k" to the result.
+                result_max = max_resistance
+                result_min = min_resistance
+                result_normal = formula
+            # if result of formula exceeds 1000 add "k" after the result.
             elif formula > 1000 and formula < 1000000:
-                result_max = max_resistance / multiplier, "kΩ"
-                result_min = min_resistance / multiplier, "kΩ"
-                result_normal = formula / multiplier, "kΩ"
-                var_result.set(result_normal)
-                var_max.set(result_max)
-                var_min.set(result_min)
+                result_max = self.add_mark(result_max, "kΩ")
+                result_min = self.add_mark(result_min, "kΩ")
+                result_normal = self.add_mark(result_normal, "kΩ")
             else:
-                result_max = max_resistance / multiplier, "MΩ"
-                result_min = min_resistance / multiplier, "MΩ"
-                result_normal = formula / multiplier, "MΩ"
-                var_result.set(result_normal)
-                var_max.set(result_max)
-                var_min.set(result_min)
+                result_max = self.add_mark(result_max, "MΩ")
+                result_min = self.add_mark(result_min, "MΩ")
+                result_normal = self.add_mark(result_normal, "MΩ")
+            # Set the variables that display result in the GUI
+            var_result.set(result_normal)
+            var_max.set(result_max)
+            var_min.set(result_min)
+        # KeyError exception when there are not enough values to calculate 
         except KeyError:
             self.error_not_enough_args()
 
-    #function to build a GUI window and all of it's widgets.
+    # Function to build a GUI window and all of it's widgets.
     def build_window(self):
-        #main_frame = tk.Frame(self.parent)
-        #main_frame.pack(fill=tk.BOTH, expand=tk.YES)
-
         # Band 1
         label = tk.Label(self.parent, text="Band 1" )
         label.grid(row=0, column=0, ipadx=30, pady=5)
@@ -190,19 +191,19 @@ class ResistorCalculator:
                                    'violet', 'gray', 'gold', 'silver')
         tolerance_combo.bind('<<ComboboxSelected>>', self.combobox_handler)
         tolerance_combo.grid(row=8, column=1)
+
         # Calculate button
         self.calculate_button = tk.Button(self.parent, text ="Calculate", command = self.calculate_resistor)
         self.calculate_button.grid(row=9, column=1, pady=5, ipadx=40)
 
         # Result
-
         label = tk.Message( self.parent, text="Result:")
         label.grid(row=12, column=0, pady=10)
         label = tk.Message( self.parent, textvariable=var_result, relief=tk.RAISED )
         label.grid(row=12, column=1)
 
         label = tk.Message( self.parent, text="Max:")
-        label.grid(row=13, column=0, pady=10)
+        label.grid(row=13, column=0, pady=10, ipadx=20)
         label = tk.Message( self.parent, textvariable=var_max, relief=tk.RAISED)
         label.grid(row=13, column=1)
 
@@ -211,9 +212,9 @@ class ResistorCalculator:
         label = tk.Message( self.parent, textvariable=var_min, relief=tk.RAISED )
         label.grid(row=14, column=1)
 
-        # status bar, displayed at the bottom of a program
-        self.statusBar = tk.Label(self.parent, text="by Namax0r", relief=tk.SUNKEN, bd=1) 
-        self.statusBar.place(x=window_width - 70, y=window_height - 20)
+        # author name, displayed at the bottom of a program
+        self.author_name = tk.Label(self.parent, text="by Namax0r", relief=tk.SUNKEN, bd=1) 
+        self.author_name.place(x=window_width - 70, y=window_height - 20)
     
 if __name__ == '__main__':
     app = ResistorCalculator(root, "Resistor Calculator")
